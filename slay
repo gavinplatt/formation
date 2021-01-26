@@ -1,0 +1,314 @@
+#!/usr/bin/env bash
+
+###############################################################################
+# ERROR: Let the user know if the script fails
+###############################################################################
+
+trap 'ret=$?; test $ret -ne 0 && printf "\n   \e[31m\033[0m  Formation failed  \e[31m\033[0m\n" >&2; exit $ret' EXIT
+
+set -e
+
+###############################################################################
+# TWIRL: Check for required functions file
+###############################################################################
+
+if [ -e twirl ]; then
+  cd "$(dirname "${BASH_SOURCE[0]}")" \
+    && . "twirl"
+else
+  printf "\n ⚠️  ./twirl not found  💃🏾 First, you need to twirl on your haters\n"
+  exit 1
+fi
+
+###############################################################################
+# CHECK: Bash version
+###############################################################################
+check_bash_version
+
+###############################################################################
+# CHECK: Internet
+###############################################################################
+chapter "Checking internet connection…"
+check_internet_connection
+
+###############################################################################
+# PROMPT: Password
+###############################################################################
+chapter "Caching password…"
+ask_for_sudo
+
+###############################################################################
+# INSTALL: Dependencies
+###############################################################################
+chapter "Installing Dependencies…"
+
+# -----------------------------------------------------------------------------
+# XCode
+# -----------------------------------------------------------------------------
+if type xcode-select >&- && xpath=$( xcode-select --print-path ) &&
+	test -d "${xpath}" && test -x "${xpath}" ; then
+	print_success_muted "Xcode already installed. Skipping."
+else
+	step "Installing Xcode…"
+	xcode-select --install
+	print_success "Xcode installed!"
+fi
+
+if [ ! -d "$HOME/.bin/" ]; then
+	mkdir "$HOME/.bin"
+fi
+
+# -----------------------------------------------------------------------------
+# NVM
+# -----------------------------------------------------------------------------
+if [ -x nvm ]; then
+	step "Installing NVM…"
+	curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
+	print_success "NVM installed!"
+	step "Installing latest Node…"
+	nvm install node
+	nvm use node
+	nvm run node --version
+	nodev=$(node -v)
+	print_success "Using Node $nodev!"
+else
+	print_success_muted "NVM/Node already installed. Skipping."
+fi
+
+
+# -----------------------------------------------------------------------------
+# Homebrew
+# -----------------------------------------------------------------------------
+if ! [ -x "$(command -v brew)" ]; then
+  step "Installing Homebrew…"
+  curl -fsS 'https://raw.githubusercontent.com/Homebrew/install/master/install' | ruby
+  print_success "Homebrew installed!"
+else
+  print_success_muted "Homebrew already installed. Skipping."
+fi
+
+if brew list | grep -Fq brew-cask; then
+  step "Uninstalling old Homebrew-Cask…"
+  brew uninstall --force brew-cask
+  print_success "Homebrew-Cask uninstalled!"
+fi
+
+###############################################################################
+# INSTALL: brews
+###############################################################################
+if [ -e $cwd/swag/brews ]; then
+  chapter "Installing Homebrew formulae…"
+
+  for brew in $(<$cwd/swag/brews); do
+    install_brews $brew
+  done
+fi
+
+###############################################################################
+# INSTALL: Valet
+###############################################################################
+if [[ $(cli_is_installed 'valet') == 0 ]]; then
+  chapter "Installing Valet…"
+  composer global require laravel/valet
+  export PATH=$PATH:~/.composer/vendor/bin
+  valet install
+  brew services start mysql@5.7
+  mkdir ~/sites
+  cd ~/sites
+  valet park
+  cd -
+  cp -R testsite ~/sites/
+  open http://testsite.test
+else
+  print_success_muted "valet already installed. Skipping."
+fi
+
+###############################################################################
+# UPDATE: Homebrew
+###############################################################################
+chapter "Updating Homebrew formulae…"
+brew update
+
+###############################################################################
+# INSTALL: casks
+###############################################################################
+if [ -e $cwd/swag/casks ]; then
+  chapter "Installing apps via Homebrew…"
+
+  for cask in $(<$cwd/swag/casks); do
+      install_application_via_brew $cask
+  done
+fi
+
+###############################################################################
+# INSTALL: Mac App Store Apps
+###############################################################################
+chapter "Installing apps from App Store…"
+if [ -x mas ]; then
+
+  print_warning "Please install mas-cli first: brew mas. Skipping."
+
+  else
+
+  if [ -e $cwd/swag/apps ]; then
+    if mas_setup; then
+      # Workaround for associative array in Bash 3
+      # https://stackoverflow.com/questions/6047648/bash-4-associative-arrays-error-declare-a-invalid-option
+      for app in $(<$cwd/swag/apps); do
+        KEY="${app%%::*}"
+        VALUE="${app##*::}"
+        install_application_via_app_store $KEY $VALUE
+      done
+    else
+      print_warning "Please signin to App Store first. Skipping."
+    fi
+  fi
+
+fi
+
+###############################################################################
+# CLEAN: Homebrew files
+###############################################################################
+chapter "Cleaning up Homebrew files…"
+brew cleanup 2> /dev/null
+
+###############################################################################
+# INSTALL: npm packages
+###############################################################################
+if [ -e $cwd/swag/npm ]; then
+  chapter "Installing npm packages…"
+
+  for pkg in $(<$cwd/swag/npm); do
+    KEY="${pkg%%::*}"
+    VALUE="${pkg##*::}"
+    install_npm_packages $KEY $VALUE
+  done
+fi
+
+
+###############################################################################
+# Customizations
+###############################################################################
+chapter "Customizing macOS…"
+
+echo ".DS_Store" >> ~/.gitignore_global
+git config --global core.excludesfile ~/.gitignore_global
+git config --global core.editor nano
+print_success "Sensible global .gitignore"
+
+# Add login message https://www.lifewire.com/add-login-message-os-x-using-terminal-2260758
+sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText "If found please call Gavin on +447914819059or email gplatt2000@gmail.com"
+print_success "Setting lock screen 'If found' message"
+
+# Enable tap to click for current user and for the login screen
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+print_success "Enable tap to click for current user and for the login screen"
+
+# Expand save panel by default
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
+# Save to disk (not to iCloud) by default
+defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
+# Disable the “Are you sure you want to open this application?” dialog
+defaults write com.apple.LaunchServices LSQuarantine -bool false
+# Show the ~/Library folder
+chflags nohidden ~/Library
+# Disable animations
+# defaults write com.apple.finder DisableAllAnimations -bool true
+# Show status bar
+defaults write com.apple.finder ShowStatusBar -bool true
+# Show path bar
+defaults write com.apple.finder ShowPathbar -bool true
+# Set default view style
+defaults write com.apple.finder FXPreferredViewStyle -string "clmv"
+print_success "Finder Tweaks"
+
+# Show item info near icons
+/usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:showItemInfo true" ~/Library/Preferences/com.apple.finder.plist
+# Show item info to the right of the icons
+/usr/libexec/PlistBuddy -c "Set DesktopViewSettings:IconViewSettings:labelOnBottom false" ~/Library/Preferences/com.apple.finder.plist
+# Enable snap-to-grid
+/usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy grid" ~/Library/Preferences/com.apple.finder.plist
+# Increase grid spacing
+/usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:gridSpacing 100" ~/Library/Preferences/com.apple.finder.plist
+# Increase the size of icons
+/usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:iconSize 80" ~/Library/Preferences/com.apple.finder.plist
+print_success "Desktop icon tweaks"
+
+# Set icon size
+# defaults write com.apple.dock tilesize -int 80
+# Set minimize effect
+# defaults write com.apple.dock mineffect -string "scale"
+# Enable minize into app icon
+# defaults write com.apple.dock minimize-to-application -bool true
+# Remove running app indicators
+# defaults write com.apple.dock show-process-indicators -bool false
+# Remove all icons from dock
+# defaults write com.apple.dock persistent-apps -array
+# Remove icon bounce on launch
+# defaults write com.apple.dock launchanim -bool false
+# Enable autohide
+# defaults write com.apple.dock autohide -bool true
+# Remove autohide delay
+# defaults write com.apple.dock autohide-delay -float 0
+# Reduce show animation duration
+# defaults write com.apple.dock autohide-time-modifier -float 0.1
+# print_success "Dock tweaks"
+
+# Remove alt char popup bubble when holding a key
+# defaults write -g ApplePressAndHoldEnabled -bool false
+# Set key repeat to fastest
+# defaults write NSGlobalDomain KeyRepeat -int 0
+# Set key repeat delay to shortest
+# defaults write NSGlobalDomain InitialKeyRepeat -int 15
+# Disable automatic capitalisation
+# defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+# Enable tabbing through all controls
+# defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+# print_success "Keyboard tweaks"
+
+# Remove Menubar transparency
+# defaults write NSGlobalDomain AppleEnableMenuBarTransparency -bool false
+# Remove app transparency
+# sudo defaults write com.apple.universalaccess reduceTransparency -bool true
+# print_success "Disabled UI Transparency"
+
+# Set clock format
+defaults write com.apple.menuextra.clock DateFormat -string "EEE MMM d H:mm"
+# Show battery percentage
+defaults write com.apple.menuextra.battery ShowPercent YES
+print_success "Menubar tweaks"
+
+# Use top right to sleep display
+defaults write com.apple.dock wvous-tr-corner -int 10
+defaults write com.apple.dock wvous-tr-modifier -int 0
+print_success "Set hot corner"
+
+# Open readme
+code README.md
+print_warning "README OPEN: Please finish up the remaining setup manually, delete from the readme as you go."
+
+# Restart everything
+chapter "Rebooting all the things…"
+killall Dock
+print_success "Dock"
+killall Finder
+print_success "Finder"
+killall SystemUIServer
+print_success "SystemUIServer"
+
+# Enable ZSH and install Oh My Zsh
+print_success "Changing shell to ZSH"
+chsh -s /bin/zsh
+print_success "Installing Oh My Zsh"
+cp dotfiles/.zshrc ~/.zshrc
+curl -fsS https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | bash
+zsh
+
+# Reload zshell
+source ~/.zshrc
+print_success "Reloaded ZSH"
+
+e_lemon_ated

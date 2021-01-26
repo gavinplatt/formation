@@ -1,0 +1,6 @@
+eslint::eslint
+jslint::jslint
+prettier::prettier
+swiff::swiff
+tailwindcss::tailwindcss
+vue-cli::vue

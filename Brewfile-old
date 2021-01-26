@@ -1,0 +1,72 @@
+tap "github/gh"
+tap "homebrew/bundle"
+tap "homebrew/cask"
+tap "homebrew/cask-drivers"
+tap "homebrew/core"
+tap "homebrew/services"
+brew "bower" 
+brew "composer"
+brew "dnsmasq"
+brew "gh"
+brew "git"
+brew "hub"
+brew "imagemagick"
+brew "mas"
+brew "mysql@5.7", restart_service: true, link: true
+brew "nginx", restart_service: true
+brew "php", link: false
+brew "php@7.3", restart_service: true, link: true
+brew "rbenv"
+brew "wget"
+brew "yarn"
+brew "zsh"
+cask "1password"
+cask "adobe-creative-cloud"
+cask "alfred"
+cask "balsamiq-wireframes"
+cask "bartender"
+cask "chronosync"
+cask "dash"
+cask "discord"
+cask "dropbox"
+cask "dynalist"
+cask "firefox"
+cask "google-chrome"
+cask "handbrake"
+cask "harvest"
+cask "iina"
+cask "imageoptim"
+cask "notion"
+cask "paw"
+cask "rectangle"
+cask "sequel-ace"
+cask "sip"
+cask "sketch"
+cask "slack"
+cask "spotify"
+cask "tuple"
+cask "visual-studio-code"
+cask "zoom"
+mas "Affinity Designer", id: 824171161
+mas "Affinity Photo", id: 824183456
+mas "Bear", id: 1091189122
+mas "Better Rename 9", id: 414209656
+mas "Calcbot", id: 931657367
+mas "DaisyDisk", id: 411643860
+mas "Day One", id: 1055511498
+mas "Evernote", id: 406056744
+mas "Fantastical", id: 435003921
+mas "Harvest", id: 506189836
+mas "iA Writer Classic", id: 439623248
+mas "iMovie", id: 408981434
+mas "Kaleidoscope", id: 587512244
+mas "Keynote", id: 409183694
+mas "Microsoft To Do", id: 1274495053
+mas "Noizio", id: 928871589
+mas "Numbers", id: 409203825
+mas "Pages", id: 409201541
+mas "Paletter", id: 1494948845
+mas "QuickScale", id: 402310348
+mas "SnippetsLab", id: 1006087419
+mas "TextSniper", id: 1528890965
+mas "Transmit", id: 403388562
