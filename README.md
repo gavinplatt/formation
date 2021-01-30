@@ -78,6 +78,7 @@
 - Boostnote
 - MAMP Pro
 - Pixave
+- [Postgres](https://postgresapp.com/downloads.html)
 
 ## @todo: buy these off app store then move to /swag/apps
 - 414209656::BetterRename9
