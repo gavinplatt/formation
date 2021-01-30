@@ -78,7 +78,8 @@
 - Boostnote
 - MAMP Pro
 - Pixave
-- [Postgres](https://postgresapp.com/downloads.html)
+- [Postgres](https://postgresapp.com/downloads.html). Then add Postgres CLI tools by running `sudo mkdir -p /etc/paths.d &&
+echo /Applications/Postgres.app/Contents/Versions/latest/bin | sudo tee /etc/paths.d/postgresapp` (see instructions [here](https://postgresapp.com/documentation/cli-tools.html))
 
 ## @todo: buy these off app store then move to /swag/apps
 - 414209656::BetterRename9
