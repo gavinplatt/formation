@@ -182,6 +182,17 @@ Note: OPSX Big Sur changes folder names in ~Library/Containers to be more readab
 ## Sketch
 - @todo: Copy preferences
 
+## Music
+- Lives on external drive, backed up to Time Machine drive
+- Add this as default iTunes/Music library
+
+## Photos
+- Lives in Dropbox/Pictures
+- Add this as default Photos library
+
+## Movies
+- Lives on external drive, backed up to Time Machine drive
+
 ---
 
 # Prefs
