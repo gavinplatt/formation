@@ -245,6 +245,15 @@ Note: OPSX Big Sur changes folder names in ~Library/Containers to be more readab
 ## VS Code Prefs
 - Preferences > Settings > Turn on Sync. Sing in to pull down settings from Github account ('replace local')
 
+## Time Machine
+- Disable until happy all set up okay. Then....
+- Backup automatically to Time Machine drive
+- Exclude:
+    - ~/Downloads
+    - ~/.npm
+    - ~/Sites
+    - Volumes/Storejet External/Inbox|Sort
+
 ---
 
 # Backups
