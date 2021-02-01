@@ -169,6 +169,11 @@ Note: OPSX Big Sur changes folder names in ~Library/Containers to be more readab
 - Copy `[TM Latest] /Users/gavin/Library/Group Containers/group.com.apple.notes/` to same location on new
 - Or just use iCloud
 
+## Books
+
+- Copy `[TM Latest] /Users/gavin/Library/Containers/com.apple.BKAgentService/*` to same location on new
+- Or just use iCloud
+
 ## mySQL data
 - Dump all DBs on old: `mysqldump -u root -p --all-databases > all.sql`
 - Copy to new, then import all DBs: `mysql -u root -p < all.sql`
