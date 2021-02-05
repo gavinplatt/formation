@@ -263,12 +263,13 @@ Note: OPSX Big Sur changes folder names in ~Library/Containers to be more readab
 
 ## Time Machine
 - Disable until happy all set up okay. Then....
-- Backup automatically to Time Machine drive
+- Connect Time machine drive. In Time Machine prefs, select this drive to backup to. But keep Time Machine disabled.
 - Exclude:
     - ~/Downloads
     - ~/.npm
     - ~/Sites
     - Volumes/Storejet External/Inbox|Sort
+    - Volumes/Storejet Bootable
 
 ---
 
