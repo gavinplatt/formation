@@ -11,6 +11,7 @@ nginx
 php
 php@7.3
 rbenv
+transmit
 wget
 yarn
 zsh
