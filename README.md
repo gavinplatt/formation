@@ -89,6 +89,7 @@ echo /Applications/Postgres.app/Contents/Versions/latest/bin | sudo tee /etc/pat
 
 ## Dropbox
 - Open Dropbox, sign into Personal
+- Turn on selective sync
 - Selectively sync just the personal 1Password folder (do the others later)
 
 ## 1Password
@@ -125,13 +126,14 @@ Note: OPSX Big Sur changes folder names in ~Library/Containers to be more readab
 
 ## Dropbox
 - On old computer:
-    - Ensure Dropbox up to date and everythign synced
+    - Ensure Dropbox up to date and everythign synced.
+    - Right click Dropbox icon in tray, unlink this computer (alternatively revoke access via web interface > Settings > Security)
     - Run Time Machine. Eject disk.
 - On new computer:
     - Disable selective sync (sync everything)
     - Immediately pause syncing
     - Copy everything from `Time Machine > Latest > ... > Dropbox` to `~/Dropbox`
-    - Unpause syncing
+    - Unpause syncing. Now everything will start being uploaded.
     - Add `Dropbox/Documents|Photos|etc` to Finder sidebar
 
 ## Downloads
@@ -274,6 +276,7 @@ Note: OPSX Big Sur changes folder names in ~Library/Containers to be more readab
 ---
 
 # Backups
-- Turn off Time Machine.
+- Unpause Dropbox, sync everything (should already have been done in steps above)
+- Turn off Time Machine temporarily
 - Set it up after certain everythign is okay. Allow 1 week.
-- @todo: See Backup setup at ...
+- @todo: add Chronosync backup system
