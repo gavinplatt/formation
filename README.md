@@ -273,6 +273,11 @@ Note: OPSX Big Sur changes folder names in ~Library/Containers to be more readab
     - Volumes/Storejet External/Inbox|Sort
     - Volumes/Storejet Bootable
 
+## Screentime Prefs
+
+- Downtime: every day 22:30 - 7:00
+- App limits: Insta, FB, Twitter, YC
+- Always allowed: Dropbox, Focus, Be Focused
 ---
 
 # Backups
